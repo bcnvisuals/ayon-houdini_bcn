@@ -16,7 +16,8 @@ class CollectReviewableInstances(plugin.HoudiniInstancePlugin):
                 "redshift_rop",
                 "arnold_rop",
                 "vray_rop",
-                "usdrender"]
+                "usdrender",
+                "rop.opengl"]
 
     def process(self, instance):
         creator_attribute = instance.data["creator_attributes"]
