@@ -40,7 +40,10 @@ class CreateReview(plugin.HoudiniCreator):
         self.node_type = pre_create_data.get("node_type")
         creator_attributes = instance_data.setdefault(
             "creator_attributes", dict())
-        creator_attributes["render_target"] = pre_create_data["render_target"]
+        # Copy render_target and review flags into creator attributes
+        for key in ("render_target", "review"):
+            if key in pre_create_data:
+                creator_attributes[key] = pre_create_data[key]
 
         instance_data.update({"node_type": self.node_type})
         instance_data["imageFormat"] = pre_create_data.get("imageFormat")
@@ -136,10 +139,14 @@ class CreateReview(plugin.HoudiniCreator):
         }
 
         return [
+            BoolDef("review",
+                    label="Review",
+                    tooltip="Mark as reviewable",
+                    default=True),
             EnumDef("render_target",
                     items=render_target_items,
                     label="Render target",
-                    default=self.render_target)
+                    default=self.render_target),
         ]
 
     def get_pre_create_attr_defs(self):

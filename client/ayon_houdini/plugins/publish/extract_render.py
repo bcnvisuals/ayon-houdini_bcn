@@ -20,6 +20,10 @@ class ExtractRender(plugin.HoudiniExtractorPlugin):
                 "usdrender"]
 
     def process(self, instance):
+        # Skip generic render extraction for review instances
+        if instance.data.get("productType") == "review":
+            self.log.debug("Skipping generic render extraction for review instance")
+            return
         creator_attribute = instance.data["creator_attributes"]
         rop_node = hou.node(instance.data.get("instance_node"))
         node_type = rop_node.type().name()
