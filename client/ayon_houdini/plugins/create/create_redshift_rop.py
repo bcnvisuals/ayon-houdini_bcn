@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Creator plugin to create Redshift ROP."""
+from ayon_houdini.plugins.create.bcn import add_Redshift_AOVnode   
 import hou  # noqa
 
 from ayon_core.pipeline import CreatorError
@@ -182,3 +183,7 @@ class CreateRedshiftROP(plugin.RenderLegacyProductTypeCreator):
 
     def get_publish_families(self):
         return ["render", "redshift_rop"]
+
+    # Custom AOVs for BCN
+    add_Redshift_AOVnode()
+

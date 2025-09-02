@@ -1,0 +1,122 @@
+{
+    "aovs":[
+        {
+            "RS_aovSuffix_1": "diffuse",
+            "RS_aovID_1": 5,
+            "RS_aovMaterialDenoise_1": 1      
+        },
+        {
+            "RS_aovSuffix_2": "diffuseFilter",
+            "RS_aovID_2": 7,
+            "RS_aovMaterialDenoise_2": 1      
+        },
+        {
+            "RS_aovSuffix_3": "reflection",
+            "RS_aovID_3": 11,
+            "RS_aovMaterialDenoise_3": 1
+        },
+        {
+            "RS_aovSuffix_4": "refraction",
+            "RS_aovID_4": 14,
+            "RS_aovMaterialDenoise_4": 1
+        },
+        {
+            "RS_aovSuffix_5": "specular",
+            "RS_aovID_5": 8,
+            "RS_aovMaterialDenoise_5": 1
+        },
+        {
+            "RS_aovSuffix_6": "emission",
+            "RS_aovID_6": 17,
+            "RS_aovMaterialDenoise_6": 1
+        },
+        {
+            "RS_aovSuffix_7": "caustics",
+            "RS_aovID_7": 20,
+            "RS_aovMaterialDenoise_7": 1
+        },
+        {
+            "RS_aovSuffix_8": "background",
+            "RS_aovID_8": 37,
+            "RS_aovMaterialDenoise_8": 1
+        },
+        {
+            "RS_aovSuffix_9": "sss",
+            "RS_aovID_9": 9,
+            "RS_aovMaterialDenoise_9": 1
+        },
+        {
+            "RS_aovSuffix_10": "gi",
+            "RS_aovID_10": 18,
+            "RS_aovMaterialDenoise_10": 1
+        },
+        {
+            "RS_aovSuffix_11": "Z",
+            "RS_aovID_11": 1,
+            "RS_aovMaterialDenoise_11": 1      
+        },
+        {
+            "RS_aovSuffix_12": "P",
+            "RS_aovID_12": 0,
+            "RS_aovMaterialDenoise_12": 1      
+        },
+        {
+            "RS_aovSuffix_13": "volume",
+            "RS_aovID_13": 27,
+            "RS_aovMaterialDenoise_13": 1
+        },
+        {
+            "RS_aovSuffix_14": "fog",
+            "RS_aovID_14": 28,
+            "RS_aovMaterialDenoise_14": 1
+        },
+        {
+            "RS_aovSuffix_15": "fogEmission",
+            "RS_aovID_15": 29,
+            "RS_aovMaterialDenoise_15": 1
+        },
+        {
+            "RS_aovSuffix_16": "cryptomatteObj",
+            "RS_aovID_16": 41,
+            "RS_aovMaterialDenoise_16": 1,
+            "RS_aovCryptomatteType_16": 0
+        },
+        {
+            "RS_aovSuffix_17": "cryptomatteMat",
+            "RS_aovID_17": 41,
+            "RS_aovMaterialDenoise_17": 1,
+            "RS_aovCryptomatteType_17": 1
+        },
+        {
+            "RS_aovSuffix_18": "uv",
+            "RS_aovID_18": 38,
+            "RS_aovMaterialDenoise_18": 1,
+            "RS_aovCustomShader_18": "../BCN_custom_AOV/uv"
+        },
+        {
+            "RS_aovSuffix_19": "beauty_aux",
+            "RS_aovID_19": 39,
+            "RS_aovMaterialDenoise_19": 1,
+            "RS_aovCustomDT_19": 1
+        },
+        {
+            "RS_aovSuffix_20": "diffuseRAW",
+            "RS_aovID_20": 6,
+            "RS_aovMaterialDenoise_20": 1,
+            "RS_aovCustomDT_20": 1
+        },
+        {
+            "RS_aovSuffix_21": "N",
+            "RS_aovID_21": 38,
+            "RS_aovMaterialDenoise_21": 1,
+            "RS_aovCustomShader_21": "../BCN_custom_AOV/Ncam"
+        },
+        {
+            "RS_aovSuffix_22": "AO",
+            "RS_aovID_22": 38,
+            "RS_aovMaterialDenoise_22": 1,
+            "RS_aovCustomShader_22": "../BCN_custom_AOV/AO"
+        }
+       
+    ]
+}
