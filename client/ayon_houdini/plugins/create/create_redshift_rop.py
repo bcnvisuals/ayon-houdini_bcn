@@ -270,7 +270,7 @@ class CreateRedshiftROP(plugin.RenderLegacyProductTypeCreator):
             ### Add AOVs from Json ###
             multiParm = aovs.parm("RS_aov")
             multiParm.set(0)
-            file_dir = "/mnt/studio/pipeline/packages/houdini_bcn_tools/1.0.1/bin/bcn/python3.9libs/bcn/aov_base.json"
+            file_dir = "/mnt/studio/pipeline/packages/houdini_bcn_tools/1.0.1/bin/bcn/json_data/aov_base.json"
             data = {}
             with open(file_dir) as outfile:
                 data = json.load(outfile)
