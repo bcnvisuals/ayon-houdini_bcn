@@ -3,6 +3,7 @@
 import inspect
 
 from ayon_houdini.api import plugin
+from ayon_houdini.api.usd import DEFAULT_PRIM_EXPRESSION
 from ayon_core.lib import EnumDef
 
 import hou
@@ -13,6 +14,7 @@ class CreateUSD(plugin.HoudiniCreator):
     identifier = "io.openpype.creators.houdini.usd"
     label = "USD"
     product_type = "usd"
+    product_base_type = "usd"
     icon = "cubes"
     enabled = False
     description = "Create USD for generic use"
@@ -37,7 +39,6 @@ class CreateUSD(plugin.HoudiniCreator):
         instance_node = hou.node(instance.get("instance_node"))
 
         parms = {
-            "lopoutput": "$HIP/pyblish/{}.usd".format(product_name),
             "enableoutputprocessor_simplerelativepaths": False,
         }
         parms.update(self.additional_parameters)
@@ -51,9 +52,14 @@ class CreateUSD(plugin.HoudiniCreator):
         to_lock = [
             # Lock some AYON attributes
             "productType",
+            "productBaseType",
             "id",
         ]
         self.lock_parameters(instance_node, to_lock)
+
+    def set_node_staging_dir(
+            self, node, staging_dir, instance, pre_create_data):
+        node.parm("lopoutput").set(f"{staging_dir}/$OS.usd")
 
     def get_network_categories(self):
         return [
@@ -62,7 +68,7 @@ class CreateUSD(plugin.HoudiniCreator):
         ]
 
     def get_publish_families(self):
-        return ["usd", "usdrop"]
+        return ["usd", "usdrop", "publish.hou"]
 
     def get_instance_attr_defs(self):
         render_target_items = {
@@ -87,13 +93,14 @@ class CreateUSDModel(CreateUSD):
     identifier = "io.ayon.creators.houdini.model.usd"
     label = "USD Asset Model"
     product_type = "model"
+    product_base_type = "model"
     enabled = True
     description = "Create USD Asset model"
 
     additional_parameters = {
         # Set the 'default prim' by default to the folder name being
         # published to
-        "defaultprim": '/`strsplit(chs("folderPath"), "/", -1)`',
+        "defaultprim": DEFAULT_PRIM_EXPRESSION,
     }
 
     def get_detail_description(self):
@@ -109,13 +116,15 @@ class CreateUSDAssembly(CreateUSD):
     identifier = "io.ayon.creators.houdini.assembly.usd"
     label = "USD Asset Assembly"
     product_type = "assembly"
+    product_base_type = "assembly"
     enabled = True
     description = "Create USD Asset assembly"
 
     additional_parameters = {
         # Set the 'default prim' by default to the folder name being
         # published to
-        "defaultprim": '/`strsplit(chs("folderPath"), "/", -1)`',
+        "defaultprim": DEFAULT_PRIM_EXPRESSION,
+
     }
 
     def get_detail_description(self):
@@ -131,6 +140,7 @@ class CreateUSDGroom(CreateUSD):
     identifier = "io.ayon.creators.houdini.groom.usd"
     label = "USD Asset Groom"
     product_type = "groom"
+    product_base_type = "groom"
     icon = "scissors"
     enabled = True
     description = "Create USD Asset groom of fur and or hairs"
@@ -138,7 +148,7 @@ class CreateUSDGroom(CreateUSD):
     additional_parameters = {
         # Set the 'default prim' by default to the folder name being
         # published to
-        "defaultprim": '/`strsplit(chs("folderPath"), "/", -1)`',
+        "defaultprim": DEFAULT_PRIM_EXPRESSION,
     }
 
     def get_detail_description(self):
@@ -156,7 +166,8 @@ class CreateUSDLook(CreateUSD):
 
     identifier = "io.openpype.creators.houdini.usd.look"
     label = "USD Asset Look"
-    product_type = "look"
+    product_base_type = "look"
+    product_type = product_base_type
     icon = "paint-brush"
     enabled = True
     description = "Create USD Asset Look with localized textures"
@@ -164,7 +175,7 @@ class CreateUSDLook(CreateUSD):
     additional_parameters = {
         # Set the 'default prim' by default to the folder name being
         # published to
-        "defaultprim": '/`strsplit(chs("folderPath"), "/", -1)`',
+        "defaultprim": DEFAULT_PRIM_EXPRESSION,
     }
 
     def get_detail_description(self):
@@ -178,4 +189,4 @@ class CreateUSDLook(CreateUSD):
         """)
 
     def get_publish_families(self):
-        return ["usd", "look", "usdrop"]
+        return ["usd", "look", "usdrop", "publish.hou"]

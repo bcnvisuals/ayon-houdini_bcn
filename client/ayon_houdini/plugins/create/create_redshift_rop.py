@@ -9,7 +9,6 @@ import json
 
 import hou  # noqa
 
-from ayon_core.pipeline import CreatorError
 from ayon_houdini.api import plugin
 from ayon_core.lib import EnumDef, BoolDef
 
@@ -20,7 +19,8 @@ class CreateRedshiftROP(plugin.RenderLegacyProductTypeCreator):
     identifier = "io.openpype.creators.houdini.redshift_rop"
     label = "Redshift ROP"
     description = "Create Redshift ROP for rendering with Redshift"
-    legacy_product_type = "redshift_rop"
+    product_base_type = "render"
+    product_type = product_base_type
     icon = "magic"
     ext = "exr"
     multi_layered_mode = "1"  # No Multi-Layered EXR File
@@ -44,8 +44,6 @@ class CreateRedshiftROP(plugin.RenderLegacyProductTypeCreator):
             pre_create_data)
 
         instance_node = hou.node(instance.get("instance_node"))
-
-        basename = instance_node.name()
 
         # Also create the linked Redshift IPR Rop
         #ipr_rop = None
@@ -73,12 +71,6 @@ class CreateRedshiftROP(plugin.RenderLegacyProductTypeCreator):
 
         ext_format_index = {"exr": 0, "tif": 1, "jpg": 2, "png": 3}
 
-        filepath = "{renders_dir}{product_name}/{product_name}.{fmt}".format(
-                renders_dir=hou.text.expandString("$HIP/pyblish/renders/"),
-                product_name=product_name,
-                fmt="$AOV.$F4.{ext}".format(ext=ext)
-            )
-        
         filepathbcn = "$HIP/pyblish/renders/$OS/$OS.$AOV.$F4.exr"
 
         if multi_layered_mode == "1":
@@ -101,11 +93,8 @@ class CreateRedshiftROP(plugin.RenderLegacyProductTypeCreator):
             "folderPath": "$AYON_FOLDER_PATH",
             "task": "$AYON_TASK_NAME",
             "AYON_productName": "$OS",
-
-
-
-
         }
+
         if ext == "exr":
             parms["RS_outputMultilayerMode"] = multi_layered_mode
             parms["RS_aovMultipart"] = multipart
@@ -121,7 +110,10 @@ class CreateRedshiftROP(plugin.RenderLegacyProductTypeCreator):
         export_dir = "$HIP/pyblish/rs/$OS/$OS.$F4.rs"
         parms["RS_archive_file"] = export_dir
 
-        if pre_create_data.get("render_target") == "farm_split":
+        if pre_create_data.get("render_target") in {
+            "farm_split",
+            "local_export_farm_render",
+        }:
             parms["RS_archive_enable"] = 1
 
         instance_node.setParms(parms)
@@ -129,7 +121,7 @@ class CreateRedshiftROP(plugin.RenderLegacyProductTypeCreator):
         # Apply BCN defaults to the created Redshift ROP
         logger = logging.getLogger(__name__)
 
-            # Custom AOVs for BCN (optional)
+        # Custom AOVs for BCN (optional)
         try:
             # The helper module is expected to expose add_custom_aov()
             # or be callable; support both for robustness.
@@ -185,8 +177,17 @@ class CreateRedshiftROP(plugin.RenderLegacyProductTypeCreator):
         getParam.set(True)
         
         # Lock some AYON attributes
-        to_lock = ["productType", "id"]
+        to_lock = ["productType", "productBaseType", "id"]
         self.lock_parameters(instance_node, to_lock)
+
+    def set_node_staging_dir(
+            self, node, staging_dir, instance, pre_create_data):
+        node.setParms({
+            "RS_outputFileNamePrefix":
+                f"{staging_dir}"
+                f"/$OS.$AOV.$F4.{pre_create_data['image_format']}",
+            "RS_archive_file": f"{staging_dir}/rs/$OS.$F4.rs"
+        })
 
     def remove_instances(self, instances):
         for instance in instances:
@@ -209,7 +210,8 @@ class CreateRedshiftROP(plugin.RenderLegacyProductTypeCreator):
             "local": "Local machine rendering",
             "local_no_render": "Use existing frames (local)",
             "farm": "Farm Rendering",
-            "farm_split": "Farm Rendering - Split export & render jobs",
+            "farm_split": "Farm Export & Farm Rendering",
+            "local_export_farm_render": "Local Export & Farm Rendering",
         }
 
         return [
@@ -266,8 +268,8 @@ class CreateRedshiftROP(plugin.RenderLegacyProductTypeCreator):
             aovs = out.createNode("Redshift_AOVs", "BCN_AOVs")
             aovs.moveToGoodPosition()
             print("Created:", aovs.path())
-            
-            ### Add AOVs from Json ###
+
+            # Add AOVs from Json
             multiParm = aovs.parm("RS_aov")
             multiParm.set(0)
             file_dir = "/mnt/studio/pipeline/packages/houdini_bcn_tools/1.0.1/bin/bcn/json_data/aov_base.json"

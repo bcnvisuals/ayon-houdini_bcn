@@ -14,7 +14,8 @@ class CollectFarmInstances(plugin.HoudiniInstancePlugin):
                 "usdrender",
                 "ass","pointcache", "redshiftproxy",
                 "vdbcache", "model", "staticMesh",
-                "rop.opengl", "usdrop", "camera"]
+                "rop.opengl", "usdrop", "camera",
+                "apex"]
 
     targets = ["local", "remote"]
     label = "Collect farm instances"
@@ -25,15 +26,22 @@ class CollectFarmInstances(plugin.HoudiniInstancePlugin):
 
         # Collect Render Target
         if creator_attribute.get("render_target") not in {
-            "farm_split", "farm"
+            "farm_split",
+            "farm",
+            "local_export_farm_render",
         }:
             instance.data["farm"] = False
             instance.data["splitRender"] = False
+            try:
+                instance.data["families"].remove("publish.hou")
+            except ValueError:
+                pass
             self.log.debug("Render on farm is disabled. "
                            "Skipping farm collecting.")
             return
 
         instance.data["farm"] = True
         instance.data["splitRender"] = (
-            creator_attribute.get("render_target") == "farm_split"
+            creator_attribute.get("render_target")
+            in {"farm_split", "local_export_farm_render"}
         )

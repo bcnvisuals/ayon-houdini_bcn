@@ -4,7 +4,8 @@ import hou
 
 from ayon_houdini.api import (
     pipeline,
-    plugin
+    plugin,
+    lib
 )
 
 
@@ -17,7 +18,8 @@ class FbxLoader(plugin.HoudiniLoader):
 
     order = -10
 
-    product_types = {"*"}
+    product_base_types = {"*"}
+    product_types = product_base_types
     representations = {"*"}
     extensions = {"fbx"}
 
@@ -134,3 +136,17 @@ class FbxLoader(plugin.HoudiniLoader):
 
         # Return all the nodes
         return [parent_node, file_node, attribdelete, null]
+
+    def create_load_placeholder_node(
+        self, node_name: str, placeholder_data: dict
+    ) -> hou.Node:
+        """Define how to create a placeholder node for this loader for the
+        Workfile Template Builder system."""
+        # Create node
+        network = lib.find_active_network(
+            category=hou.objNodeTypeCategory(),
+            default="/obj"
+        )
+        node = network.createNode("null", node_name=node_name)
+        node.moveToGoodPosition()
+        return node

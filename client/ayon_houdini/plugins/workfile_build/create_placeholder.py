@@ -8,7 +8,6 @@ from ayon_core.pipeline.create import CreateContext
 from ayon_houdini.api.workfile_template_builder import (
     HoudiniPlaceholderPlugin
 )
-from ayon_houdini.api.lib import read
 
 
 class HoudiniPlaceholderCreatePlugin(
@@ -37,10 +36,10 @@ class HoudiniPlaceholderCreatePlugin(
     def get_placeholder_node_name(self, placeholder_data):
         create_context = CreateContext(registered_host())
         creator = create_context.creators.get(placeholder_data["creator"])
-        product_type = creator.product_type
+        product_base_type = creator.product_base_type
         node_name = "{}_{}".format(
             self.identifier.replace(".", "_"),
-            product_type
+            product_base_type
         )
 
         return node_name
@@ -50,7 +49,7 @@ class HoudiniPlaceholderCreatePlugin(
         create_placeholders = self.collect_scene_placeholders()
 
         for node in create_placeholders:
-            placeholder_data = read(node)
+            placeholder_data = self._read(node)
             output.append(
                 CreatePlaceholderItem(node.path(), placeholder_data, self)
             )

@@ -5,11 +5,12 @@ from ayon_core.lib import EnumDef
 
 from ayon_houdini.api import (
     pipeline,
-    plugin
+    plugin,
 )
 from ayon_houdini.api.lib import (
     set_camera_resolution,
-    get_camera_from_container
+    get_camera_from_container,
+    find_active_network,
 )
 
 
@@ -90,9 +91,12 @@ def transfer_non_default_values(src, dest, ignore=None):
 class CameraLoader(plugin.HoudiniLoader):
     """Load camera from an Alembic file"""
 
-    product_types = {"camera"}
+    product_base_types = {"camera"}
+    product_types = product_base_types
+
     label = "Load Camera (abc)"
-    representations = {"abc"}
+    representations = {"*"}
+    extensions = {"abc"}
     order = -10
 
     icon = "code-fork"
@@ -248,3 +252,17 @@ return aperture
         expression = expression.replace("return ", "aperture = ")
         expression += self._match_maya_render_mask_expression
         parm.setExpression(expression, language=hou.exprLanguage.Python)
+
+    def create_load_placeholder_node(
+        self, node_name: str, placeholder_data: dict
+    ) -> hou.Node:
+        """Define how to create a placeholder node for this loader for the
+        Workfile Template Builder system."""
+        # Create node
+        network = find_active_network(
+            category=hou.objNodeTypeCategory(),
+            default="/obj"
+        )
+        node = network.createNode("null", node_name=node_name)
+        node.moveToGoodPosition()
+        return node

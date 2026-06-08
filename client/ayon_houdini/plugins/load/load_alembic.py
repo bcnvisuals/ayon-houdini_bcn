@@ -4,14 +4,16 @@ import hou
 
 from ayon_houdini.api import (
     pipeline,
-    plugin
+    plugin,
+    lib
 )
 
 
 class AbcLoader(plugin.HoudiniLoader):
     """Load Alembic"""
 
-    product_types = {"model", "animation", "pointcache", "gpuCache"}
+    product_base_types = {"model", "animation", "pointcache", "gpuCache"}
+    product_types = product_base_types
     label = "Load Alembic"
     representations = {"*"}
     extensions = {"abc"}
@@ -87,3 +89,20 @@ class AbcLoader(plugin.HoudiniLoader):
         file_path = super().filepath_from_context(context)
         # Format file name, Houdini only wants forward slashes
         return os.path.normpath(file_path).replace("\\", "/")
+
+    def create_load_placeholder_node(
+        self, node_name: str, placeholder_data: dict
+    ) -> hou.Node:
+        """Define how to create a placeholder node for this loader for the
+        Workfile Template Builder system."""
+        # Create node
+        network = lib.find_active_network(
+            category=hou.sopNodeTypeCategory(),
+            default="/obj/geo1"
+        )
+        if not network:
+            network = hou.node("/obj").createNode("geo", "geo1")
+
+        node = network.createNode("null", node_name=node_name)
+        node.moveToGoodPosition()
+        return node

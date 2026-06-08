@@ -4,6 +4,8 @@ from ayon_houdini.api import (
 )
 from ayon_houdini.api.pipeline import get_or_create_ayon_container
 
+import hou
+
 
 class FilePathLoader(plugin.HoudiniLoader):
     """Load a managed filepath to a null node.
@@ -19,7 +21,8 @@ class FilePathLoader(plugin.HoudiniLoader):
     order = 9
     icon = "link"
     color = "white"
-    product_types = {"*"}
+    product_base_type = {"*"}
+    product_types = product_base_type
     representations = {"*"}
 
     def load(self, context, name=None, namespace=None, data=None):
@@ -35,6 +38,7 @@ class FilePathLoader(plugin.HoudiniLoader):
         node.moveToGoodPosition()
 
         hda_utils.set_node_representation_from_context(node, context)
+        return node
 
     def update(self, container, context):
         # First we handle backwards compatibility where this loader still
@@ -71,3 +75,15 @@ class FilePathLoader(plugin.HoudiniLoader):
         parm_template_group.replace(parm_template_group.find("filepath"),
                                     parm)
         node.setParmTemplateGroup(parm_template_group)
+
+    def create_load_placeholder_node(
+        self, node_name: str, placeholder_data: dict
+    ) -> hou.Node:
+        """Define how to create a placeholder node for this loader for the
+        Workfile Template Builder system."""
+        # Create node
+        parent_node = get_or_create_ayon_container()
+        node = parent_node.createNode("ayon::generic_loader",
+                                      node_name=node_name)
+        node.moveToGoodPosition()
+        return node
