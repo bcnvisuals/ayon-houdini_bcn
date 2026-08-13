@@ -175,7 +175,7 @@ class CreateRedshiftROP(plugin.RenderLegacyProductTypeCreator):
 
         getParam = instance_node.parm("RS_aovMultipart")
         getParam.set(True)
-        
+
         # Lock some AYON attributes
         to_lock = ["productType", "productBaseType", "id"]
         self.lock_parameters(instance_node, to_lock)

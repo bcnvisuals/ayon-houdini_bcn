@@ -62,3 +62,4 @@ class LOPLoadShotLoader(load.LoaderPlugin):
         node = network.createNode("null", node_name=node_name)
         node.moveToGoodPosition()
         return node
+

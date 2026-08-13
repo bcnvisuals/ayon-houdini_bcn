@@ -150,3 +150,4 @@ class FbxLoader(plugin.HoudiniLoader):
         node = network.createNode("null", node_name=node_name)
         node.moveToGoodPosition()
         return node
+

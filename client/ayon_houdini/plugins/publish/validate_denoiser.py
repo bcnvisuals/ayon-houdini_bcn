@@ -90,5 +90,3 @@ class ValidateRedshiftDenoiserRandomizeOff(plugin.HoudiniInstancePlugin):
             return [rop]
 
         return []
-
-
