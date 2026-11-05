@@ -29,6 +29,8 @@ class CreateRedshiftROP(plugin.HoudiniCreator):
                 creator_attributes[key] = pre_create_data[key]
 
         instance_data.update({"node_type": "Redshift_ROP"})
+        # Add chunk size attribute
+        instance_data["chunkSize"] = 10
 
         instance = super(CreateRedshiftROP, self).create(
             product_name,
@@ -69,6 +71,8 @@ class CreateRedshiftROP(plugin.HoudiniCreator):
                 product_name=product_name,
                 fmt="$AOV.$F4.{ext}".format(ext=ext)
             )
+        
+        filepathbcn = "$HIP/pyblish/renders/$OS/$OS.$AOV.$F4.exr"
 
         if multilayer_mode_index[multi_layered_mode] == "1":
             multipart = False
@@ -80,9 +84,17 @@ class CreateRedshiftROP(plugin.HoudiniCreator):
             # Render frame range
             "trange": 1,
             # Redshift ROP settings
-            "RS_outputFileNamePrefix": filepath,
+            "RS_outputFileNamePrefix": filepathbcn,
             "RS_outputBeautyAOVSuffix": "beauty",
             "RS_outputFileFormat": ext_format_index[ext],
+            "variant": "$OS",
+            "folderPath": "$AYON_FOLDER_PATH",
+            "task": "$AYON_TASK_NAME",
+            "AYON_productName": "$OS",
+
+
+
+
         }
         if ext == "exr":
             parms["RS_outputMultilayerMode"] = multilayer_mode_index[multi_layered_mode]
@@ -96,16 +108,15 @@ class CreateRedshiftROP(plugin.HoudiniCreator):
                     camera = node.path()
             parms["RS_renderCamera"] = camera or ""
 
-        export_dir = hou.text.expandString("$HIP/pyblish/rs/")
-        rs_filepath = f"{export_dir}{product_name}/{product_name}.$F4.rs"
-        parms["RS_archive_file"] = rs_filepath
+        export_dir = "$HIP/pyblish/rs/$OS/$OS.$F4.rs"
+        parms["RS_archive_file"] = export_dir
 
         if pre_create_data.get("render_target") == "farm_split":
             parms["RS_archive_enable"] = 1
 
         instance_node.setParms(parms)
 
-        # Lock some Avalon attributes
+        # Lock some Avalon 
         to_lock = ["productType", "id"]
         self.lock_parameters(instance_node, to_lock)
 
